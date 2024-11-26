@@ -1,0 +1,367 @@
+//Preguntas de binary tree para la practica del examen en java 15
+
+///Pregunta 1: Arbol binario (Tipos)
+//Para un arbol normal no existe un limite para el numero de hijo ni de nodos especificos
+//Full binary tree: Cada nodo que no sea faltante de una rama tiene 2 nodos hijos 
+//Arbol binario completo: Todos los niveles están completos a excepcion (de ser el caso) el ultimo nivel, mientras que todos los demas nodos se encuentran llenos completamente.
+//Arbol binario Perfecto: Todos los nodos tioenen 2 hijos y todas las ramas son del mismo nivel
+
+///2. Como es el heap binario implementado 
+//Se implementan comunmente con un arreglo. Caualqier arbol binario puede implementarse en un arreglo, el arbol binario en el heap 
+//siempre es un arbol binario completo, por lo que puede almacenarse de forma compacta. No se requiere espacio para punteros
+//en cambio, el padre y el hijo de cada nodo pueden encontrarse por aritmetica en indices de arreglos
+
+public class BinaryHeap {
+    private int[] heap;
+    private int size;
+    private int capacity;
+
+    // Constructor para inicializar el heap
+    public BinaryHeap(int capacity) {
+        this.capacity = capacity;
+        this.size = 0;
+        this.heap = new int[capacity];
+    }
+
+    // Obtener el índice del padre
+    private int parent(int index) {
+        return (index - 1) / 2;
+    }
+
+    // Obtener el índice del hijo izquierdo
+    private int leftChild(int index) {
+        return 2 * index + 1;
+    }
+
+    // Obtener el índice del hijo derecho
+    private int rightChild(int index) {
+        return 2 * index + 2;
+    }
+
+    // Insertar un elemento en el heap
+    public void insert(int value) {
+        if (size == capacity) {
+            throw new IllegalStateException("Heap is full");
+        }
+
+        // Insertar al final y ajustar
+        heap[size] = value;
+        size++;
+        heapifyUp(size - 1);
+    }
+
+    // Mover el nodo hacia arriba para mantener la propiedad del heap
+    private void heapifyUp(int index) {
+        int current = index;
+        while (current > 0 && heap[current] < heap[parent(current)]) {
+            swap(current, parent(current));
+            current = parent(current);
+        }
+    }
+
+    // Extraer el valor mínimo del Min-Heap
+    public int extractMin() {
+        if (size == 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+
+        int min = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+        heapifyDown(0);
+        return min;
+    }
+
+    // Mover el nodo hacia abajo para mantener la propiedad del heap
+    private void heapifyDown(int index) {
+        int smallest = index;
+        int left = leftChild(index);
+        int right = rightChild(index);
+
+        if (left < size && heap[left] < heap[smallest]) {
+            smallest = left;
+        }
+        if (right < size && heap[right] < heap[smallest]) {
+            smallest = right;
+        }
+        if (smallest != index) {
+            swap(index, smallest);
+            heapifyDown(smallest);
+        }
+    }
+
+    // Intercambiar dos elementos en el arreglo
+    private void swap(int index1, int index2) {
+        int temp = heap[index1];
+        heap[index1] = heap[index2];
+        heap[index2] = temp;
+    }
+
+    // Imprimir el contenido del heap
+    public void printHeap() {
+        for (int i = 0; i < size; i++) {
+            System.out.print(heap[i] + " ");
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        BinaryHeap minHeap = new BinaryHeap(10);
+        
+        minHeap.insert(10);
+        minHeap.insert(20);
+        minHeap.insert(5);
+        minHeap.insert(30);
+        minHeap.insert(1);
+        
+        System.out.println("Contenido del heap:");
+        minHeap.printHeap();
+        
+        System.out.println("Extraer mínimo: " + minHeap.extractMin());
+        System.out.println("Contenido del heap después de extraer:");
+        minHeap.printHeap();
+    }
+}
+
+///Pregunta 3
+//Como se implementa una arbol de estructura de datos
+// Clase Nodo que representa cada nodo del árbol binario
+class Nodo {
+    int valor;
+    Nodo izquierdo;
+    Nodo derecho;
+
+    // Constructor para inicializar un nodo
+    public Nodo(int valor) {
+        this.valor = valor;
+        this.izquierdo = null;
+        this.derecho = null;
+    }
+}
+
+// Clase Árbol Binario
+public class ArbolBinario {
+    Nodo raiz;
+
+    // Constructor para inicializar un árbol vacío
+    public ArbolBinario() {
+        this.raiz = null;
+    }
+
+    // Método para insertar un nuevo nodo en el árbol
+    public void insertar(int valor) {
+        raiz = insertarRecursivo(raiz, valor);
+    }
+
+    private Nodo insertarRecursivo(Nodo nodo, int valor) {
+        // Si el nodo actual es nulo, creamos un nuevo nodo
+        if (nodo == null) {
+            return new Nodo(valor);
+        }
+
+        // Comparar el valor y decidir si va al subárbol izquierdo o derecho
+        if (valor < nodo.valor) {
+            nodo.izquierdo = insertarRecursivo(nodo.izquierdo, valor);
+        } else if (valor > nodo.valor) {
+            nodo.derecho = insertarRecursivo(nodo.derecho, valor);
+        }
+
+        return nodo; // Retornar el nodo (no se modifica si ya existe)
+    }
+
+    // Recorridos básicos del árbol binario
+
+    // Recorrido en orden (In-Order)
+    public void recorridoEnOrden() {
+        recorridoEnOrdenRecursivo(raiz);
+        System.out.println();
+    }
+
+    private void recorridoEnOrdenRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            recorridoEnOrdenRecursivo(nodo.izquierdo); // Visitar el subárbol izquierdo
+            System.out.print(nodo.valor + " ");       // Visitar la raíz
+            recorridoEnOrdenRecursivo(nodo.derecho);  // Visitar el subárbol derecho
+        }
+    }
+
+    // Recorrido preorden (Pre-Order)
+    public void recorridoPreOrden() {
+        recorridoPreOrdenRecursivo(raiz);
+        System.out.println();
+    }
+
+    private void recorridoPreOrdenRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            System.out.print(nodo.valor + " ");       // Visitar la raíz
+            recorridoPreOrdenRecursivo(nodo.izquierdo); // Visitar el subárbol izquierdo
+            recorridoPreOrdenRecursivo(nodo.derecho);  // Visitar el subárbol derecho
+        }
+    }
+
+    // Recorrido postorden (Post-Order)
+    public void recorridoPostOrden() {
+        recorridoPostOrdenRecursivo(raiz);
+        System.out.println();
+    }
+
+    private void recorridoPostOrdenRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            recorridoPostOrdenRecursivo(nodo.izquierdo); // Visitar el subárbol izquierdo
+            recorridoPostOrdenRecursivo(nodo.derecho);  // Visitar el subárbol derecho
+            System.out.print(nodo.valor + " ");         // Visitar la raíz
+        }
+    }
+
+    // Método principal para probar el árbol binario
+    public static void main(String[] args) {
+        ArbolBinario arbol = new ArbolBinario();
+        
+        // Insertar elementos en el árbol
+        arbol.insertar(50);
+        arbol.insertar(30);
+        arbol.insertar(70);
+        arbol.insertar(20);
+        arbol.insertar(40);
+        arbol.insertar(60);
+        arbol.insertar(80);
+
+        // Mostrar los recorridos
+        System.out.println("Recorrido In-Order:");
+        arbol.recorridoEnOrden();
+
+        System.out.println("Recorrido Pre-Order:");
+        arbol.recorridoPreOrden();
+
+        System.out.println("Recorrido Post-Order:");
+        arbol.recorridoPostOrden();
+    }
+}
+
+///Pregunta 4: Implemente un recorrido de preorden transversal para un arbol binario utilizando recursion
+
+/*El enunciado muestra cómo realizar un recorrido en preorden (pre-order traversal) en un árbol binario usando recursión. La explicación es clara y se basa en tres pasos:
+
+Procesar el nodo actual (N).
+Recorrer recursivamente el subárbol izquierdo (L).
+Recorrer recursivamente el subárbol derecho (R).
+A continuación, implemento este recorrido en preorden utilizando Java, basado en el esquema presentado. */
+
+//Codigo de ejemplo aparte
+// Clase Nodo para el árbol binario
+class Nodo {
+    int valor;
+    Nodo izquierdo;
+    Nodo derecho;
+
+    public Nodo(int valor) {
+        this.valor = valor;
+        this.izquierdo = null;
+        this.derecho = null;
+    }
+}
+
+// Clase principal para el Árbol Binario
+public class ArbolBinario {
+    Nodo raiz;
+
+    public ArbolBinario() {
+        this.raiz = null;
+    }
+
+    // Método para recorrer el árbol en Pre-Order
+    public void recorridoPreOrden() {
+        recorridoPreOrdenRecursivo(raiz);
+        System.out.println(); // Nueva línea tras completar el recorrido
+    }
+
+    private void recorridoPreOrdenRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            System.out.print(nodo.valor + " "); // N: Procesar el nodo
+            recorridoPreOrdenRecursivo(nodo.izquierdo); // L: Recorrer el subárbol izquierdo
+            recorridoPreOrdenRecursivo(nodo.derecho);  // R: Recorrer el subárbol derecho
+        }
+    }
+
+    // Método para insertar valores en el árbol binario
+    public void insertar(int valor) {
+        raiz = insertarRecursivo(raiz, valor);
+    }
+
+    private Nodo insertarRecursivo(Nodo nodo, int valor) {
+        if (nodo == null) {
+            return new Nodo(valor);
+        }
+        if (valor < nodo.valor) {
+            nodo.izquierdo = insertarRecursivo(nodo.izquierdo, valor);
+        } else if (valor > nodo.valor) {
+            nodo.derecho = insertarRecursivo(nodo.derecho, valor);
+        }
+        return nodo;
+    }
+
+    public static void main(String[] args) {
+        ArbolBinario arbol = new ArbolBinario();
+
+        // Insertar valores en el árbol
+        arbol.insertar(50);
+        arbol.insertar(30);
+        arbol.insertar(20);
+        arbol.insertar(40);
+        arbol.insertar(70);
+        arbol.insertar(60);
+        arbol.insertar(80);
+
+        System.out.println("Recorrido Pre-Order del árbol binario:");
+        arbol.recorridoPreOrden(); // Resultado esperado: 50 30 20 40 70 60 80
+    }
+}
+
+//Complejidad temporal O(n)
+
+//Codigo de ejemplo original
+    //Funcion recursiva para desarrollar un pre-orden transversal del arbol
+    public static void preorder(TreeNode root)
+
+      //regresar si el nodo actual esta vacio
+      if (root == null){
+      return;
+      }
+
+    //Muestra en pantalla la parte de datos de la raiz (O el nodo actual)
+    System.out.print(root.data + "");
+
+    //Subarbol de la izquierda transversal
+    preorder(root.left);
+
+    //Subarbol derecho transversal
+    preorder(root.right);
+
+
+
+/// Pregunta 5: Que es el binary heap
+//Binary heap: Arbol binario con las siguientes propiedades:
+  //Arbol completo (todos los niveles completos excvepto posiblemente el ultimo, ultimo nivel tiene todas las keys lo mas a la izquierda posible). Lo hace apropiado para ser almacenado en un arreglo.
+  //Un binary heap es un Min Heap o Max Heap. 
+  //Min binary heap: La key en la raiz debe ser minima entre todas las llaves presentes en el binary      heap
+  //La misma propiedad debe ser recursivamente real para todos los nodos en un arbol binario. 
+  //El arbol binario maximo es similar al MinHeap
+
+
+///Pregunta 6: Que es un arbol de busqueda binario
+//Estructura de datos que permite mantener de forma rapida un ""sorted list" de numeros
+//-Cada nodo tiene maximmo dos hijos
+//-Se llama un arbol de busqueda por que puede ser utilizado para buscar la presencia de un numero en complejidad temporal de O(log n) 
+
+//propiedades que separan a un arbol binario de busqueda de un arbol binario regular son los siguientes:
+
+//-Todos los nodos del lado izquierdo del arbol son menores que el nodo raiz
+//- Todos los nodos del lado derecho son mayores que el nodo raiz
+//-Ambos subarboles de cada nodo son tambien arboles binarios de bisqueda y tienen las mismas propiedades anteriores.
+
+
+//Pregunta 7 
+
+
+
+
